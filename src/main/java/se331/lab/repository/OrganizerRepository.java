@@ -7,7 +7,8 @@ import se331.lab.entity.Event;
 import se331.lab.entity.Organizer;
 
 import java.util.List;
-@Repository
+
 public interface OrganizerRepository extends JpaRepository<Organizer, Long> {
+    List<Organizer> findAll();
 }
 

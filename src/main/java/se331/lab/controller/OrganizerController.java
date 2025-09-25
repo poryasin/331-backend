@@ -1,8 +1,11 @@
 package se331.lab.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se331.lab.entity.Event;
 import se331.lab.entity.Organizer;
@@ -11,9 +14,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/organizers")
+
 public class OrganizerController {
     private final OrganizerService organizerService;
 
@@ -24,11 +27,10 @@ public class OrganizerController {
             @RequestParam(value = "_page",  required = false) Integer page) {
 
         int total = organizerService.getOrganizerCount();
-        List<Organizer> data = organizerService.getOrganizers(limit, page);
-
-        return ResponseEntity.ok()
-                .header("X-Total-Count", String.valueOf(total)) // เผื่อ client ใช้ทำ pagination
-                .body(data);
+        Page<Organizer> pageOutput = organizerService.getOrganizers(limit, page);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("x-total-count", String.valueOf(pageOutput.getTotalElements()));
+        return new ResponseEntity<>(pageOutput.getContent(), responseHeaders, HttpStatus.OK);
     }
 
     // GET /organizers/{id}
@@ -40,7 +42,7 @@ public class OrganizerController {
         }
         return ResponseEntity.ok(o);
     }
-    @PostMapping
+    @PostMapping("/organizers")
     public ResponseEntity<Organizer> addOrganizer(@RequestBody Organizer organizer) {
         Organizer saved = organizerService.saveOrganizer(organizer);
         return ResponseEntity.ok(saved);
