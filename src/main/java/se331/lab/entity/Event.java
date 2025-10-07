@@ -1,10 +1,9 @@
 package se331.lab.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 
 @Data
@@ -15,7 +14,6 @@ import lombok.*;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Exclude
     Long id;
     String category;
     String title;
@@ -24,5 +22,8 @@ public class Event {
     String date;
     String time;
     Boolean petAllowed;
-    String organizer;
+    @ManyToOne
+    Organizer organizer;
+    @ManyToMany(mappedBy ="eventHistory")
+    List<Participant> participants;
 }
